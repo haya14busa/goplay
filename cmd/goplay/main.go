@@ -23,7 +23,7 @@ func main() {
 		code = file
 	}
 
-	if err := goplay.Run(code, os.Stdout, os.Stderr); err != nil {
+	if err := goplay.DefaultClient.Run(code, os.Stdout, os.Stderr); err != nil {
 		fmt.Println(err)
 	}
 }

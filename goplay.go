@@ -12,17 +12,44 @@ import (
 	"time"
 )
 
-var (
-	baseURL         = "https://play.golang.org"
-	shareEndpoint   = baseURL + "/share"
-	compileEndpoint = baseURL + "/compile"
-)
+const defaultBaseURL = "https://play.golang.org"
 
-var httpClient = &http.Client{}
+var DefaultClient = &Client{}
 
-// Run runs go code on playground and output stdout/stderr.
-func Run(code io.Reader, stdout io.Writer, stderr io.Writer) error {
-	resp, err := Compile(code)
+// Client represensts The Go Playground client.
+type Client struct {
+	// The base URL of The Go Playground. Default is `https://play.golang.org/`.
+	BaseURL string
+
+	// The HTTP client to use when sending requests. Defaults to
+	// `http.DefaultClient`.
+	HTTPClient *http.Client
+}
+
+func (c *Client) httpClient() *http.Client {
+	if c.HTTPClient != nil {
+		return c.HTTPClient
+	}
+	return http.DefaultClient
+}
+
+func (c *Client) baseURL() string {
+	if c.BaseURL != "" {
+		return c.BaseURL
+	}
+	return defaultBaseURL
+}
+
+func (c *Client) shareEndpoint() string {
+	return c.baseURL() + "/share"
+}
+
+func (c *Client) compileEndpoint() string {
+	return c.baseURL() + "/compile"
+}
+
+func (c *Client) Run(code io.Reader, stdout io.Writer, stderr io.Writer) error {
+	resp, err := c.Compile(code)
 	if err != nil {
 		return err
 	}
@@ -40,26 +67,7 @@ func Run(code io.Reader, stdout io.Writer, stderr io.Writer) error {
 	return nil
 }
 
-// Share creates go playground share link.
-func Share(code io.Reader) (string, error) {
-	req, err := http.NewRequest("POST", shareEndpoint, code)
-	if err != nil {
-		return "", err
-	}
-	resp, err := httpClient.Do(req)
-	if err != nil {
-		return "", err
-	}
-	defer resp.Body.Close()
-	b, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("%s/p/%s", baseURL, string(b)), nil
-}
-
-// Compile compiles code on the go playground.
-func Compile(code io.Reader) (*Response, error) {
+func (c *Client) Compile(code io.Reader) (*Response, error) {
 	b, err := ioutil.ReadAll(code)
 	if err != nil {
 		return nil, err
@@ -67,7 +75,7 @@ func Compile(code io.Reader) (*Response, error) {
 	v := url.Values{}
 	v.Set("version", "2")
 	v.Set("body", string(b))
-	resp, err := httpClient.PostForm(compileEndpoint, v)
+	resp, err := c.httpClient().PostForm(c.compileEndpoint(), v)
 	if err != nil {
 		return nil, err
 	}
@@ -77,6 +85,24 @@ func Compile(code io.Reader) (*Response, error) {
 		return nil, err
 	}
 	return &r, nil
+}
+
+// Share creates go playground share link.
+func (c *Client) Share(code io.Reader) (string, error) {
+	req, err := http.NewRequest("POST", c.shareEndpoint(), code)
+	if err != nil {
+		return "", err
+	}
+	resp, err := c.httpClient().Do(req)
+	if err != nil {
+		return "", err
+	}
+	defer resp.Body.Close()
+	b, err := ioutil.ReadAll(resp.Body)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s/p/%s", c.baseURL(), string(b)), nil
 }
 
 // Response represensts response type of /compile.
