@@ -16,6 +16,8 @@ const defaultBaseURL = "https://play.golang.org"
 
 var DefaultClient = &Client{}
 
+var delay = time.Sleep
+
 // Client represensts The Go Playground client.
 type Client struct {
 	// The base URL of The Go Playground. Default is `https://play.golang.org/`.
@@ -57,7 +59,7 @@ func (c *Client) Run(code io.Reader, stdout io.Writer, stderr io.Writer) error {
 		return errors.New(resp.Errors)
 	}
 	for _, event := range resp.Events {
-		time.Sleep(event.Delay)
+		delay(event.Delay)
 		w := stderr
 		if event.Kind == "stdout" {
 			w = stdout
@@ -110,7 +112,7 @@ func (c *Client) Share(code io.Reader) (string, error) {
 // https://github.com/golang/playground/blob/816964eae74f7612221c13ab73f2a8021c581010/sandbox/sandbox.go#L35-L38
 type Response struct {
 	Errors string
-	Events []Event
+	Events []*Event
 }
 
 // Event represensts event of /compile result.
