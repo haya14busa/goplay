@@ -1,15 +1,11 @@
-package main
+package socket
 
 import (
 	"fmt"
-	"io/ioutil"
 	"log"
 	"net"
 	"net/http"
 	"net/url"
-	"os"
-
-	goplay "github.com/haya14busa/goplay/socket"
 
 	"golang.org/x/net/websocket"
 	"golang.org/x/tools/playground/socket"
@@ -17,7 +13,17 @@ import (
 
 const origin = "http://127.0.0.1/"
 
+const code = `
+package main
+
+import "fmt"
+
 func main() {
+	fmt.Println("Hello, 世界!")
+}
+`
+
+func ExampleClient() {
 	// Serve websocket playground server
 	addr, err := net.ResolveTCPAddr("tcp", "localhost:0")
 	if err != nil {
@@ -30,7 +36,11 @@ func main() {
 	defer l.Close()
 	mu := http.NewServeMux()
 
-	mu.Handle("/", socket.NewHandler(mustParseURL(fmt.Sprintf("http://%s", l.Addr()))))
+	u, err := url.Parse(fmt.Sprintf("http://%s", l.Addr()))
+	if err != nil {
+		log.Fatal(err)
+	}
+	mu.Handle("/", socket.NewHandler(u))
 	s := http.Server{Handler: mu}
 	go s.Serve(l)
 
@@ -44,15 +54,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	cli := goplay.Client{Conn: ws}
-	code, err := ioutil.ReadAll(os.Stdin)
-	if err != nil {
-		log.Fatal(err)
-	}
-	cli.Run(string(code))
-}
-
-func mustParseURL(u string) *url.URL {
-	r, _ := url.Parse(u)
-	return r
+	cli := &Client{Conn: ws}
+	cli.Run(code)
+	// Output:
+	// Hello, 世界!
 }
