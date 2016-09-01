@@ -16,14 +16,14 @@ func TestClient_Run(t *testing.T) {
 	defer func() { delay = saveDelay }()
 
 	events := []*Event{
-		&Event{Message: "out1", Kind: "stdout", Delay: 5},
-		&Event{Message: "out2", Kind: "stdout", Delay: 5},
-		&Event{Message: "err1", Kind: "stderr", Delay: 5},
+		{Message: "out1", Kind: "stdout", Delay: 5},
+		{Message: "out2", Kind: "stdout", Delay: 5},
+		{Message: "err1", Kind: "stderr", Delay: 5},
 	}
 
 	delayCalledN := 0
 	delay = func(d time.Duration) {
-		delayCalledN += 1
+		delayCalledN++
 		if d != 5 {
 			t.Errorf("delay func got unexpected value: %v", d)
 		}
@@ -78,8 +78,8 @@ func TestClient_Compile(t *testing.T) {
 	wantResp := &Response{
 		Errors: "",
 		Events: []*Event{
-			&Event{Message: "test1", Kind: "stdout", Delay: 0},
-			&Event{Message: "test2", Kind: "stdout", Delay: 2},
+			{Message: "test1", Kind: "stdout", Delay: 0},
+			{Message: "test2", Kind: "stdout", Delay: 2},
 		},
 	}
 
