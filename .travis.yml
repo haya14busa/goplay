@@ -12,6 +12,7 @@ before_install:
   - make deps
 
 script:
+  - uname
   - make lint
   - go test -v -race ./...
   - goveralls -service=travis-ci

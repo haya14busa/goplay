@@ -10,10 +10,15 @@ deps:
 	go get github.com/kisielk/errcheck
 	go get github.com/client9/misspell/cmd/misspell
 
+# http://syohex.hatenablog.com/entry/20140702/1404250291
+XARG_EMPTY=''
+ifeq ("$(uname)", "LINUX")
+	XARG_EMPTY='-r'
+endif
 
 lint: deps
-	gofmt -d -s . | tee /dev/stderr | xargs -r false
-	golint ./... | tee /dev/stderr | xargs -r false
+	gofmt -d -s . | tee /dev/stderr | xargs $(XARG_EMPTY) false
+	golint ./... | tee /dev/stderr | xargs $(XARG_EMPTY) false
 	go vet ./...
 	errcheck -asserts -ignoretests -ignore 'Close'
 	misspell -error **/*.go **/*.md
