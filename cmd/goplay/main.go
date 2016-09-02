@@ -61,7 +61,7 @@ func main() {
 
 		fmt.Println(url)
 		if *openBrowser {
-			open.Start(url)
+			fatalIf(open.Start(url))
 		}
 	}
 }
