@@ -2,9 +2,25 @@
 # https://loads.pickle.me.uk/2015/08/22/easy-peasy-github-releases-for-go-projects-using-travis/
 package = github.com/haya14busa/goplay/cmd/goplay
 
-.PHONY: release
+.PHONY: deps lint release
 
-release:
+deps:
+	go get -d -v -t ./...
+	go get github.com/mattn/goveralls
+	go get golang.org/x/tools/cmd/cover
+	go get github.com/golang/lint/golint
+	go get github.com/kisielk/errcheck
+	go get github.com/client9/misspell/cmd/misspell
+
+
+lint: deps
+	gofmt -d -s . | tee /dev/stderr | xargs -r false
+	golint ./... | tee /dev/stderr | xargs -r false
+	go vet ./...
+	errcheck -asserts -ignoretests -ignore 'Close'
+	misspell -error **/*.go **/*.md
+
+release: deps
 	mkdir -p release
 	GOOS=linux   GOARCH=amd64 go build -o release/goplay-linux-amd64       $(package)
 	GOOS=linux   GOARCH=386   go build -o release/goplay-linux-386         $(package)
