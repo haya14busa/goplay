@@ -1,6 +1,4 @@
-# https://github.com/golang/go/wiki/HostedContinuousIntegration
-# https://loads.pickle.me.uk/2015/08/22/easy-peasy-github-releases-for-go-projects-using-travis/
-package = github.com/haya14busa/goplay/cmd/goplay
+# Prefer go commands for basic tasks like `build`, `test`, etc...
 
 .PHONY: deps lint release
 
@@ -19,6 +17,10 @@ lint: deps
 	go vet ./...
 	errcheck -asserts -ignoretests -ignore 'Close'
 	misspell -error **/*.go **/*.md
+
+# https://github.com/golang/go/wiki/HostedContinuousIntegration
+# https://loads.pickle.me.uk/2015/08/22/easy-peasy-github-releases-for-go-projects-using-travis/
+package = github.com/haya14busa/goplay/cmd/goplay
 
 release: deps
 	mkdir -p release
