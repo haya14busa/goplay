@@ -1,6 +1,7 @@
 # goplay - The Go Playground (https://play.golang.org/) client 
 
 [![Travis Build Status](https://travis-ci.org/haya14busa/goplay.svg?branch=travis)](https://travis-ci.org/haya14busa/goplay)
+[![Appveyor Build status](https://ci.appveyor.com/api/projects/status/qr63uhhvogvnj2su?svg=true)](https://ci.appveyor.com/project/haya14busa/goplay)
 [![Go Report Card](https://goreportcard.com/badge/github.com/haya14busa/goplay)](https://goreportcard.com/report/github.com/haya14busa/goplay)
 [![Coverage Status](https://coveralls.io/repos/github/haya14busa/goplay/badge.svg)](https://coveralls.io/github/haya14busa/goplay)
 [![Releases](https://img.shields.io/github/tag/haya14busa/goplay.svg)](https://github.com/haya14busa/goplay/releases)
