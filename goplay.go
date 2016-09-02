@@ -14,6 +14,7 @@ import (
 
 const defaultBaseURL = "https://play.golang.org"
 
+// DefaultClient is default Go Playground client.
 var DefaultClient = &Client{}
 
 var delay = time.Sleep
@@ -50,6 +51,7 @@ func (c *Client) compileEndpoint() string {
 	return c.baseURL() + "/compile"
 }
 
+// Run runs code which compiled in The Go Playground.
 func (c *Client) Run(code io.Reader, stdout io.Writer, stderr io.Writer) error {
 	resp, err := c.Compile(code)
 	if err != nil {
@@ -69,6 +71,7 @@ func (c *Client) Run(code io.Reader, stdout io.Writer, stderr io.Writer) error {
 	return nil
 }
 
+// Compile compiles code on The Go Playground.
 func (c *Client) Compile(code io.Reader) (*Response, error) {
 	b, err := ioutil.ReadAll(code)
 	if err != nil {
@@ -108,18 +111,18 @@ func (c *Client) Share(code io.Reader) (string, error) {
 }
 
 // Response represensts response type of /compile.
-// Licence: Copyright (c) 2014 The Go Authors. All rights reserved.
-// https://github.com/golang/playground/blob/816964eae74f7612221c13ab73f2a8021c581010/sandbox/sandbox.go#L35-L38
 type Response struct {
 	Errors string
 	Events []*Event
+	// Licence: Copyright (c) 2014 The Go Authors. All rights reserved.
+	// https://github.com/golang/playground/blob/816964eae74f7612221c13ab73f2a8021c581010/sandbox/sandbox.go#L35-L38
 }
 
 // Event represensts event of /compile result.
-// Licence: Copyright (c) 2014 The Go Authors. All rights reserved.
-// https://github.com/golang/playground/blob/816964eae74f7612221c13ab73f2a8021c581010/sandbox/play.go#L76-L80
 type Event struct {
 	Message string
 	Kind    string        // "stdout" or "stderr"
 	Delay   time.Duration // time to wait before printing Message
+	// Licence: Copyright (c) 2014 The Go Authors. All rights reserved.
+	// https://github.com/golang/playground/blob/816964eae74f7612221c13ab73f2a8021c581010/sandbox/play.go#L76-L80
 }

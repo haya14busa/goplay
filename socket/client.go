@@ -28,6 +28,7 @@ type Client struct {
 	Stderr io.Writer
 }
 
+// Run runs code on connected go playground websocket server.
 func (c *Client) Run(code string) error {
 	stdout, stderr := c.Stdout, c.Stderr
 	if stdout == nil {
